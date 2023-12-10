@@ -2,24 +2,25 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-st.set_page_config(layout="wide", page_title="Análise de dados", page_icon="📊")
+#Definindo layout de toda pagina
+st.set_page_config(
+                   layout="wide", 
+                   page_title="Análise de dados", 
+                   page_icon="📊"
+                   )
+
+#Definindo titulo da pagina
 st.title("Análise de dados")
 
-
+#Lendo a planilha de vendas
 df_lojas = pd.read_excel("LOJAS.xlsx")
 
-# Criar uma nova coluna com ano e mês em formato textual
+
+#Criando uma nova coluna para o filtro com formato DD/AAA
 df_lojas['Mês/Ano'] = df_lojas['Data de Venda'].dt.strftime('%m/%Y')
 df_lojas['Mês/Ano'] = pd.to_datetime(df_lojas['Mês/Ano'], format='%m/%Y').dt.to_period('M').dt.strftime('%B/%Y')
 
-# Traduzir os nomes dos meses para português (opcional)
-meses = {
-    'January': 'Janeiro', 'February': 'Fevereiro', 'March': 'Março',
-    'April': 'Abril', 'May': 'Maio', 'June': 'Junho',
-    'July': 'Julho', 'August': 'Agosto', 'September': 'Setembro',
-    'October': 'Outubro', 'November': 'Novembro', 'December': 'Dezembro'
-}
-df_lojas['Mês/Ano'] = df_lojas['Mês/Ano'].apply(lambda x: '/'.join([meses.get(item, item) for item in x.split('/')]))
+
 
 
 opcoes_mes_ano = df_lojas['Mês/Ano'].sort_values().unique()
@@ -43,14 +44,15 @@ with col1:
     fig = px.bar(df_filtrado, x='Estado', y='Valor de Venda', color='Estado',
                  labels={'Valor de Venda':'Valor de Venda', 'Estado':'Estado'},
                  title='Valor de Venda por Estado')
-    fig.update_layout(autosize=True)
+    
     st.plotly_chart(fig, use_container_width=True)
 
 
 with col2:
-    fig_horiz = px.bar(df_filtrado, x='Valor de Venda', y='Nome do Produto', orientation='h',
+    fig_horiz = px.bar(df_filtrado, x='Valor de Venda', y='Nome do Produto',color="Nome do Produto", orientation='h',
                        labels={'Valor de Venda':'Valor de Venda', 'Nome do Produto':'Nome do Produto'},
                        title='Valor de Venda por Produto')
+    
     st.plotly_chart(fig_horiz, use_container_width=True)
 
 with col3:
